@@ -33,7 +33,7 @@ def fix_update(update, rule_values):
 	while not is_valid_update(update, rule_values):
 		shuffle_num += 1
 		random.shuffle(update)
-	print(f"shuffled and done after {shuffle_num} shuffles")
+	print(f"shuffled and done set of length {len(update)} after {shuffle_num} shuffles")
 	return update
 
 def is_valid_update(update, rule_values):
