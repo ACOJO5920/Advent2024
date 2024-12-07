@@ -1,5 +1,4 @@
-import random
-import concurrent.futures
+import copy
 
 def run(filename):
 	rule_values = []
@@ -16,25 +15,26 @@ def run(filename):
 			if not is_valid_update(update, rule_values):
 				failed_updates.append(update)	
 	fixed_updates = []
-	with concurrent.futures.ThreadPoolExecutor() as executor:
-		futures = []
-		for update in failed_updates:
-			futures.append(executor.submit(fix_update, update, rule_values))
-	for future in concurrent.futures.as_completed(futures):
-		print("completed one")
-	fixed_updates.append(fixed_update)	
+	for update in failed_updates:
+		fixed_update = fix_update(update, rule_values)
+		fixed_updates.append(fixed_update)	
 	for update in fixed_updates:
 		midpoint = len(update)//2	
 		total += update[midpoint]
 	return total
 
 def fix_update(update, rule_values):
-	shuffle_num = 0
 	while not is_valid_update(update, rule_values):
-		shuffle_num += 1
-		random.shuffle(update)
-	print(f"shuffled and done set of length {len(update)} after {shuffle_num} shuffles")
+		for rule in rule_values:
+			try:
+				index1 = update.index(rule[0])
+				index2 = update.index(rule[1])
+				if index1 > index2:
+					update[index1], update[index2] = update[index2], update[index1]				
+			except ValueError:
+				pass
 	return update
+
 
 def is_valid_update(update, rule_values):
 	previous_numbers = []
